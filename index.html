@@ -1,0 +1,922 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Link In Bio</title>
+    <!-- Load Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Custom font import for that Retro Terminal feel */
+        @import url('https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&display=swap');
+        
+        /* Define Neon Colors for easy reference in CSS (Using Indigo/Red Theme) */
+        :root {
+            --neon-primary: #818cf8; /* Indigo */
+            --neon-secondary: #3b82f6; /* Blue for channel split */
+            --glitch-red: #ef4444; /* Retained for aggressive split */
+        }
+
+        /* --- KEYFRAMES --- */
+        
+        /* Initial Card Entry Animation */
+        @keyframes fadeInDown {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes fadeInRight {
+            from { opacity: 0; transform: translateX(-10px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+        
+        /* Glitch for H1 - Color Channel Split and Distortion (Slightly faster) */
+        @keyframes textGlitch {
+            0%, 100% { transform: translate(0.5px, 0); }
+            30% { transform: translate(-0.5px, 0); }
+            60% { transform: translate(0.5px, 0); }
+        }
+        @keyframes textGlitchBefore {
+            0% { transform: translate(1px, 0); clip-path: inset(5% 0 85% 0); }
+            20% { transform: translate(-1px, 0); clip-path: inset(10% 0 80% 0); }
+            40% { transform: translate(2px, 0); clip-path: inset(25% 0 65% 0); }
+            60% { transform: translate(-2px, 0); clip-path: inset(55% 0 25% 0); }
+            80% { transform: translate(1px, 0); clip-path: inset(70% 0 10% 0); }
+            100% { transform: translate(-1px, 0); clip-path: inset(80% 0 5% 0); }
+        }
+        @keyframes textGlitchAfter {
+            0% { transform: translate(-1px, 0); clip-path: inset(80% 0 10% 0); }
+            25% { transform: translate(2px, 0); clip-path: inset(50% 0 40% 0); }
+            50% { transform: translate(-1px, 0); clip-path: inset(15% 0 75% 0); }
+            75% { transform: translate(3px, 0); clip-path: inset(30% 0 50% 0); }
+            100% { transform: translate(-2px, 0); clip-path: inset(5% 0 80% 0); }
+        }
+        
+        /* Intermittent Glitch for the Main Card Border and Skew */
+        @keyframes cardGlitch {
+            0%, 97% { transform: skewX(0deg); border-color: #6b7280; }
+            98% { transform: skewX(-0.5deg); border-color: var(--glitch-red); }
+            99% { transform: skewX(0.5deg); border-color: var(--neon-secondary); }
+            100% { transform: skewX(0deg); border-color: #6b7280; }
+        }
+
+        /* Aggressive short glitch for links/buttons on click */
+        @keyframes activeGlitch {
+            0% { transform: translateX(3px) skewX(2deg); opacity: 0.8; }
+            50% { transform: translateX(-3px) skewX(-2deg); opacity: 1; }
+            100% { transform: translateX(0) skewX(0deg); opacity: 0.9; }
+        }
+
+        /* Glitch for Interactive Elements (On Hover) - Used for Photo Cards */
+        @keyframes hoverGlitch {
+            0% { transform: translate(1px, -1px); box-shadow: 0 0 15px rgba(239, 68, 68, 0.7); }
+            25% { transform: translate(-1px, 1px); }
+            50% { transform: translate(1px, 1px); }
+            75% { transform: translate(-1px, -1px); box-shadow: 0 0 15px rgba(129, 140, 248, 0.7); }
+            100% { transform: translate(0); box-shadow: 0 0 15px rgba(129, 140, 248, 0.7); }
+        }
+        
+        /* Keyframe for pulsing profile picture glow */
+        @keyframes pulse-glow {
+            0%, 100% { 
+                box-shadow: 
+                    0 0 10px rgba(129, 140, 248, 0.6), 
+                    0 0 20px rgba(129, 140, 248, 0.3);
+            }
+            50% { 
+                box-shadow: 
+                    0 0 15px rgba(129, 140, 248, 0.8), 
+                    0 0 25px rgba(129, 140, 248, 0.5); 
+            }
+        }
+        
+        /* Keyframe for pulsing accent text */
+        @keyframes pulse-text {
+            0%, 100% { 
+                color: var(--neon-primary);
+                text-shadow: 0 0 3px rgba(129, 140, 248, 0.4);
+            }
+            50% { 
+                color: #a5b4fc; 
+                text-shadow: 0 0 6px rgba(129, 140, 248, 0.7); 
+            }
+        }
+        
+        /* Keyframe for scan-reveal effect */
+        @keyframes scan-reveal {
+            from { clip-path: inset(0 100% 0 0); }
+            to { clip-path: inset(0 0 0 0); }
+        }
+
+        /* Subtle flicker for log text */
+        @keyframes log-flicker {
+            0% { opacity: 1; text-shadow: 0 0 5px rgba(129, 140, 248, 0.7); }
+            1% { opacity: 0.8; text-shadow: none; }
+            3% { opacity: 1; text-shadow: 0 0 5px rgba(129, 140, 248, 0.7); }
+            5% { opacity: 0.9; text-shadow: 0 0 3px rgba(129, 140, 248, 0.5); }
+            7% { opacity: 1; text-shadow: 0 0 5px rgba(129, 140, 248, 0.7); }
+            100% { opacity: 1; text-shadow: 0 0 5px rgba(129, 140, 248, 0.7); }
+        }
+        
+        /* Keyframe for the blinking cursor pipe (used in typing effect) */
+        @keyframes cursorBlink {
+            from, to { border-color: transparent }
+            50% { border-color: var(--neon-primary) }
+        }
+
+        /* --- END KEYFRAMES --- */
+
+        body {
+            font-family: 'Space Mono', monospace;
+            background: linear-gradient(150deg, #181825 0%, #0a0a0e 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start; 
+            padding: 3rem 1rem;
+            color: #d1d5db; 
+            position: relative; /* Needed for message box positioning */
+        }
+
+        /* Full-screen Intro Overlay */
+        #introScreen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100vh;
+            /* Same background gradient as body */
+            background: linear-gradient(150deg, #181825 0%, #0a0a0e 100%); 
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+            transition: opacity 1s ease-out; 
+            padding: 1rem;
+        }
+        
+        /* Intro Title Styling for Typewriter Effect */
+        .intro-title {
+            font-size: 3rem;
+            color: #9ca3af;
+            position: relative; 
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+            /* Typewriter required styles */
+            overflow: hidden; 
+            white-space: nowrap; 
+            width: 0; /* Start at 0 width */
+            transition: none; /* JS will control the width */
+            border-right: 5px solid transparent; /* Cursor placeholder */
+        }
+        
+        .intro-title::after {
+            content: ""; /* Set dynamically by JS */
+            position: absolute;
+            top: 0;
+            right: -15px; /* Position the cursor pipe next to the text */
+            height: 100%;
+            width: 5px;
+            background-color: transparent;
+            border-right: 5px solid var(--neon-primary); /* Blinking cursor */
+            animation: cursorBlink 0.7s infinite step-end;
+            transition: opacity 0.3s;
+        }
+
+        /* Cursor removed when typing is done or not needed */
+        .intro-title.typing-done::after {
+            opacity: 0;
+            border-right: 5px solid transparent; 
+        }
+
+        @media (min-width: 640px) {
+            .intro-title { font-size: 5rem; }
+        }
+        
+        /* New styles for the boot log */
+        #bootLog {
+            background-color: #00000040;
+            border: 1px solid #4b5563;
+            box-shadow: inset 0 0 5px rgba(129, 140, 248, 0.3);
+            min-height: 150px;
+            width: 90%;
+            max-width: 500px;
+            margin-bottom: 2rem;
+            overflow-y: auto;
+            scrollbar-width: none; /* Firefox */
+        }
+        #bootLog::-webkit-scrollbar {
+            display: none; /* Chrome, Safari */
+        }
+
+        .boot-line {
+            opacity: 0.7;
+            text-shadow: 0 0 2px rgba(129, 140, 248, 0.5);
+        }
+        
+        /* Button inactive state */
+        #enterSystemBtn:disabled {
+            cursor: not-allowed;
+            opacity: 0.3;
+            border-color: #4b5563;
+            box-shadow: none;
+            color: #9ca3af;
+        }
+        
+        /* Main Content Wrapper Styling */
+        #mainContent {
+            padding: 3rem 1rem;
+            min-height: 100vh;
+            align-self: flex-start;
+            opacity: 0;
+            transition: opacity 1s ease-in-out;
+        }
+
+         /* Main Card */
+        .shadow-neon-card {
+            background: #1f1f2e;
+            border: 1px solid #6b7280; 
+            box-shadow: 
+                0 0 5px rgba(129, 140, 248, 0.4), 
+                inset 0 0 3px rgba(129, 140, 248, 0.3);
+            opacity: 0;
+            /* Added cardGlitch animation */
+            animation: fadeInDown 0.8s ease-out forwards, cardGlitch 10s infinite linear 2s; 
+            will-change: transform, border-color; /* Optimization for animation */
+        }
+        
+        /* Profile Image */
+        .profile-shadow-neon {
+            border: 3px solid #6b7280;
+            animation: pulse-glow 3s infinite ease-in-out 1s; 
+        }
+
+
+     /* Social Link Styling */
+        .social-link {
+            transition: all 0.2s;
+            border: 1px solid #4b5563;
+            background-color: #2c2c3a;
+            color: #e5e7eb;
+            box-shadow: 
+                0 0 3px rgba(129, 140, 248, 0.2), 
+                3px 3px 8px rgba(0, 0, 0, 0.3);
+            opacity: 0;
+            animation: fadeInRight 0.4s ease-out forwards;
+        }
+
+   
+
+       /* Staggered delays for the four social links */
+        .social-link:nth-child(1) { animation-delay: 0.8s; }
+        .social-link:nth-child(2) { animation-delay: 1.0s; }
+        .social-link:nth-child(3) { animation-delay: 1.2s; }
+        .social-link:nth-child(4) { animation-delay: 1.4s; }
+
+        /* Hover effect for social links */
+        .social-link:hover {
+            transform: translateY(-2px) scale(1.02);
+            border-color: #a5b4fc; 
+            box-shadow: 
+                0 0 15px rgba(129, 140, 248, 0.7), 
+                0 5px 15px rgba(0, 0, 0, 0.5); 
+            background-color: #38384d; 
+        }
+
+        /* Class applied via JS on click */
+        .social-link.glitch-active,
+        #copyHandleBtn.glitch-active,
+        #enterSystemBtn.glitch-active {
+            animation: activeGlitch 0.2s steps(2) 1;
+        }
+        
+        .social-link svg {
+            stroke: currentColor;
+        }
+        
+        .container-card {
+            max-width: 90%;
+            width: 100%;
+        }
+        @media (min-width: 640px) {
+            .container-card {
+                max-width: 650px;
+            }
+        }
+        
+        /* Header Text - Glitch Animation */
+        .header-glitch {
+            color: #9ca3af;
+            position: relative; 
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+            animation: textGlitch 2s infinite linear alternate; 
+        }
+        
+        .header-glitch::before,
+        .header-glitch::after {
+            content: attr(data-text); 
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            transition: none;
+            transform-origin: center center;
+        }
+        .header-glitch::before {
+            color: var(--glitch-red); /* Using variable for clarity */
+            z-index: 1000;
+            mix-blend-mode: multiply;
+            animation: textGlitchBefore 0.3s infinite linear alternate; 
+        }
+        .header-glitch::after {
+            color: var(--neon-secondary); /* Using variable for clarity */
+            z-index: 1001;
+            mix-blend-mode: multiply;
+            animation: textGlitchAfter 0.4s infinite linear alternate; 
+        }
+        
+        /* Class for the scan-reveal text */
+        .animate-scan-reveal {
+            clip-path: inset(0 100% 0 0); 
+            animation: scan-reveal 1.5s steps(30, end) 2s 1 forwards; 
+        }
+        
+        .accent-text {
+            animation: pulse-text 2.5s infinite ease-in-out 0.5s; 
+        }
+
+        /* Log Text Style */
+        .log-text-flicker {
+            animation: log-flicker 4s infinite linear;
+        }
+
+        /* Photo Cards */
+        .photo-card-shadow-neon {
+            border: 1px solid #4b5563;
+            box-shadow: 3px 3px 8px rgba(0, 0, 0, 0.3);
+            transition: all 0.2s;
+            opacity: 0;
+            animation: fadeInRight 0.5s ease-out forwards;
+        }
+        
+        /* Staggered delays for the six photo cards */
+        .photo-card-shadow-neon:nth-child(1) { animation-delay: 1.6s; }
+        .photo-card-shadow-neon:nth-child(2) { animation-delay: 1.7s; }
+        .photo-card-shadow-neon:nth-child(3) { animation-delay: 1.8s; }
+        .photo-card-shadow-neon:nth-child(4) { animation-delay: 1.9s; }
+        .photo-card-shadow-neon:nth-child(5) { animation-delay: 2.0s; }
+        .photo-card-shadow-neon:nth-child(6) { animation-delay: 2.1s; }
+
+        .photo-card-shadow-neon:hover {
+            animation: hoverGlitch 0.15s linear infinite;
+            border-color: #818cf8;
+        }
+        .photo-card-shadow-neon img {
+            transition: all 0.2s;
+        }
+        .photo-card-shadow-neon:hover img {
+             transform: scale(1.05);
+        }
+        
+        /* Copy Button Style */
+        .copy-button {
+            border: 1px dashed #4b5563;
+            transition: background-color 0.1s;
+        }
+        .copy-button:hover {
+            background-color: #38384d;
+            border-style: solid;
+        }
+        
+        /* Feedback Message Box */
+        #messageBox {
+            position: fixed;
+            top: 1rem;
+            right: 1rem;
+            max-width: 90%;
+            z-index: 50;
+            transition: opacity 0.3s ease-in-out, transform 0.3s ease-in-out;
+            background-color: #38384d;
+            border: 1px solid var(--neon-primary);
+            box-shadow: 0 0 10px rgba(129, 140, 248, 0.5);
+            text-shadow: 0 0 2px rgba(129, 140, 248, 0.8);
+        }
+    </style>
+</head>
+<body>
+
+     <!-- Feedback Message Box (Initially hidden) -->
+    <div id="messageBox" class="opacity-0 scale-90 p-3 rounded-lg text-sm text-indigo-300 font-bold">
+        // SYSTEM MESSAGE: READY
+    </div>
+
+    
+    <!-- 
+        ========================================
+        INTRO SCREEN: ACCESS PROTOCOL
+        ========================================
+    -->
+    <div id="introScreen">
+        <!-- Title starts empty, typed by JS -->
+        <h1 id="introTitle" class="intro-title font-extrabold tracking-widest text-center" data-text="ACCESS_PROTOCOL">
+            <!-- Content will be filled by JS -->
+        </h1>
+        
+        <!-- Animated Boot Log Container -->
+        <div id="bootLog" class="p-4 rounded-lg text-xs text-indigo-400 font-mono w-full max-w-lg mb-8 space-y-1">
+            <p>// Initializing System . . .</p>
+        </div>
+        
+        <!-- Button is initially disabled -->
+        <button id="enterSystemBtn" disabled class="social-link font-bold py-3 px-8 rounded-lg text-lg uppercase transition-all duration-300 hover:text-white">
+            ENTER SYSTEM
+        </button>
+
+        <p class="text-indigo-400 text-xs mt-10 p-2 border border-dashed border-gray-700 max-w-sm text-center log-text-flicker">
+            // WARNING: ANONYMOUS ACCESS GRANTED. PROCEED WITH CAUTION //
+        </p>
+    </div>
+
+
+    <!-- 
+        ========================================
+        MAIN CONTENT (Initially hidden, revealed after intro)
+        ========================================
+    -->
+    <div id="mainContent" class="hidden w-full flex justify-center">
+
+        <div class="container-card shadow-neon-card p-6 sm:p-10 rounded-lg space-y-12">
+
+            <!-- Header and Profile Section -->
+            <header class="text-center space-y-4">
+                <!-- Profile Image -->
+                <div class="w-32 h-32 mx-auto rounded-full overflow-hidden profile-shadow-neon">
+                    <img src="saimun.jpg"
+                         alt="Your Profile Picture" 
+                         class="w-full h-full object-cover" 
+                         onerror="this.src='https://placehold.co/128x128/38384d/ffffff?text=USER'; this.onerror=null;">
+                </div>
+                
+                <!-- GLITCH HEADER -->
+                <h1 class="text-2xl font-extrabold tracking-widest header-glitch" data-text="[USER_INTERFACE]">
+                    [USER_INTERFACE]
+                </h1>
+                
+                <div class="flex flex-col items-center justify-center space-y-2 sm:space-y-0 sm:flex-row sm:space-x-4">
+                    <p class="text-lg accent-text">STATUS: SECURE // OPERATOR: @INS SAIMUN</p>
+                    <!-- Copy to Clipboard Button -->
+                    <button id="copyHandleBtn" class="copy-button px-3 py-1 text-xs text-indigo-400 rounded transition duration-200 hover:text-white">
+                        [COPY]
+                    </button>
+                </div>
+                
+                <!-- Added .animate-scan-reveal class here -->
+                <p class="text-gray-400 text-sm max-w-md mx-auto leading-relaxed border border-dashed border-gray-700 p-2 animate-scan-reveal">
+                    // Accessing encrypted data streams. All personal conduits linked below. Unauthorized access attempt logged. //
+                </p>
+            </header>
+
+            <!-- Social Media Links Section -->
+            <section class="space-y-5">
+                <h2 class="text-2xl font-bold accent-text border-b border-gray-600 pb-2 tracking-widest">// NET_LINKS</h2>
+                
+                <nav id="linkContainer" class="grid grid-cols-1 gap-4">
+                    
+                    <!-- Link Button 1: Instagram -->
+                    <a href="https://www.instagram.com/ins_saimun" class="social-link font-bold py-4 rounded-lg flex items-center justify-center space-x-4 w-full uppercase text-sm">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="20" x="2" y="2" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12 8a4 4 0 0 1 4 3.37z"/><line x1="17.5" x2="17.51" y1="6.5" y2="6.5"/></svg>
+                        <span>VISUAL_LOGS</span>
+                    </a>
+
+                    <!-- Link Button 2: Facebook -->
+                    <a href="https://www.facebook.com/rizzler.ins/" class="social-link font-bold py-4 rounded-lg flex items-center justify-center space-x-4 w-full uppercase text-sm">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg>
+                        <span>DATA_STREAM</span>
+                    </a>
+
+                    <!-- Link Button 3: Twitter/X -->
+                    <a href="https://x.com/ins_saimun" class="social-link font-bold py-4 rounded-lg flex items-center justify-center space-x-4 w-full uppercase text-sm">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 4s-.7 2.1-2 3.4c1.6 10-9.4 17.3-18 11.6 2.2.1 4.4-.6 6-2 1.1-1.2 4-2.5 3-5.5 1-2.5 1.4-7.5.5-11.5 1.4-.4 2.8-.2 4 0 2.8-2 3-7 1.2-11.3 1-.4 2.3-.2 3 0z"/></svg>
+                        <span>X</span>
+                    </a>
+
+                    <!-- Link Button 4: Threads (Updated) -->
+                    <a href="https://www.threads.com/@ins_saimun" class="social-link font-bold py-4 rounded-lg flex items-center justify-center space-x-4 w-full uppercase text-sm">
+                        <!-- New SVG: Message/Chat Bubble for "THREADS" -->
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z"/></svg>
+                        <span>THREADS</span>
+                    </a>
+
+                </nav>
+            </section>
+            
+            <!-- System Log Section -->
+            <section class="space-y-3 pt-6">
+                <h2 class="text-2xl font-bold accent-text border-b border-gray-600 pb-2 tracking-widest">// SYSTEM_LOG</h2>
+                <div id="systemLogContainer" class="bg-black/20 p-4 rounded-lg border border-dashed border-gray-700 h-16 sm:h-20 overflow-hidden text-sm">
+                    <p id="logOutput" class="text-indigo-300 log-text-flicker leading-relaxed"></p>
+                </div>
+            </section>
+
+            <!-- Photo Gallery Section -->
+            <section class="space-y-5">
+                <h2 class="text-2xl font-bold accent-text border-b border-gray-600 pb-2 tracking-widest">// VISUAL_FILES</h2>
+
+                <!-- Responsive Grid for Photos -->
+                <div class="grid grid-cols-2 sm:grid-cols-3 gap-4">
+                    
+                    <!-- Photo Card 1 -->
+                    <div class="relative group aspect-square rounded-sm overflow-hidden photo-card-shadow-neon cursor-pointer">
+                        <img src="https://placehold.co/300x300/1f1f2e/818cf8?text=FILE_01" 
+                             alt="Personal Photo 1" 
+                             class="w-full h-full object-cover group-hover:opacity-60 transition duration-300">
+                        <div class="absolute inset-0 bg-black/70 opacity-0 group-hover:opacity-100 transition duration-300 flex items-center justify-center">
+                            <span class="text-sm font-bold text-gray-300">/MISSION</span>
+                        </div>
+                    </div>
+
+                    <!-- Photo Card 2 -->
+                    <div class="relative group aspect-square rounded-sm overflow-hidden photo-card-shadow-neon cursor-pointer">
+                        <img src="https://placehold.co/300x300/1f1f2e/818cf8?text=FILE_02" 
+                             alt="Personal Photo 2" 
+                             class="w-full h-full object-cover group-hover:opacity-60 transition duration-300">
+                        <div class="absolute inset-0 bg-black/70 opacity-0 group-hover:opacity-100 transition duration-300 flex items-center justify-center">
+                            <span class="text-sm font-bold text-gray-300">/GRID</span>
+                        </div>
+                    </div>
+
+                    <!-- Photo Card 3 -->
+                    <div class="relative group aspect-square rounded-sm overflow-hidden photo-card-shadow-neon cursor-pointer">
+                        <img src="https://placehold.co/300x300/1f1f2e/818cf8?text=FILE_03" 
+                             alt="Personal Photo 3" 
+                             class="w-full h-full object-cover group-hover:opacity-60 transition duration-300">
+                        <div class="absolute inset-0 bg-black/70 opacity-0 group-hover:opacity-100 transition duration-300 flex items-center justify-center">
+                            <span class="text-sm font-bold text-gray-300">/TRACE</span>
+                        </div>
+                    </div>
+
+                    <!-- Photo Card 4 -->
+                    <div class="relative group aspect-square rounded-sm overflow-hidden photo-card-shadow-neon hidden sm:block cursor-pointer">
+                        <img src="https://placehold.co/300x300/1f1f2e/818cf8?text=FILE_04" 
+                             alt="Personal Photo 4" 
+                             class="w-full h-full object-cover group-hover:opacity-60 transition duration-300">
+                        <div class="absolute inset-0 bg-black/70 opacity-0 group-hover:opacity-100 transition duration-300 flex items-center justify-center">
+                            <span class="text-sm font-bold text-gray-300">/SYSTEM</span>
+                        </div>
+                    </div>
+                    
+                    <!-- Photo Card 5 -->
+                    <div class="relative group aspect-square rounded-sm overflow-hidden photo-card-shadow-neon hidden sm:block cursor-pointer">
+                        <img src="https://placehold.co/300x300/1f1f2e/818cf8?text=FILE_05" 
+                             alt="Personal Photo 5" 
+                             class="w-full h-full object-cover group-hover:opacity-60 transition duration-300">
+                        <div class="absolute inset-0 bg-black/70 opacity-0 group-hover:opacity-100 transition duration-300 flex items-center justify-center">
+                            <span class="text-sm font-bold text-gray-300">/PROTOCOL</span>
+                        </div>
+                    </div>
+
+                    <!-- Photo Card 6 -->
+                    <div class="relative group aspect-square rounded-sm overflow-hidden photo-card-shadow-neon hidden sm:block cursor-pointer">
+                        <img src="https://placehold.co/300x300/1f1f2e/818cf8?text=FILE_06" 
+                             alt="Personal Photo 6" 
+                             class="w-full h-full object-cover group-hover:opacity-60 transition duration-300">
+                        <div class="absolute inset-0 bg-black/70 opacity-0 group-hover:opacity-100 transition duration-300 flex items-center justify-center">
+                            <span class="text-sm font-bold text-gray-300">/ENCRYPT</span>
+                        </div>
+                    </div>
+                    
+                </div>
+            </section>
+
+            <!-- Footer - Now Dynamic -->
+            <footer class="text-center pt-6 text-gray-500 text-xs border-t border-gray-700">
+                <!-- Dynamic Terminal Output -->
+                <p id="terminalOutput" class="text-indigo-400"></p>
+            </footer>
+
+        </div>
+    </div>
+
+<script>
+    // Global variable to hold app state
+let isAppInitialized = false;
+const APP_HANDLE = '@INS SAIMUN';
+const MAIN_TITLE = "ACCESS_PROTOCOL";
+
+/**
+ * Shows a temporary, themed system message notification.
+ * @param {string} message - The text content of the message.
+ * @param {number} duration - How long the message should be visible in milliseconds.
+ */
+const showMessage = (message, duration = 2000) => {
+    const messageBox = document.getElementById('messageBox');
+    
+    messageBox.textContent = message;
+    
+    // Show animation
+    messageBox.classList.remove('opacity-0', 'scale-90');
+    messageBox.classList.add('opacity-100', 'scale-100');
+
+    setTimeout(() => {
+        // Hide animation
+        messageBox.classList.remove('opacity-100', 'scale-100');
+        messageBox.classList.add('opacity-0', 'scale-90');
+    }, duration);
+};
+
+/**
+ * Copies text to the clipboard and shows a feedback message.
+ * @param {string} text - The text to copy.
+ * @param {string} displayMessage - The message to show on success.
+ * @param {HTMLElement} element - The element to apply the glitch effect to.
+ */
+const copyToClipboard = (text, displayMessage, element) => {
+    // Glitch effect on button click
+    applyGlitch(element);
+
+    try {
+        // Use modern Clipboard API if available
+        if (navigator.clipboard) {
+            navigator.clipboard.writeText(text).then(() => {
+                showMessage(displayMessage);
+            }).catch(err => {
+                console.error('Could not copy to clipboard (API failed):', err);
+                showMessage('// ACCESS DENIED: Copy Failed', 3000);
+            });
+            return;
+        }
+
+        // Fallback method (older browsers)
+        const tempInput = document.createElement('input');
+        tempInput.value = text;
+        document.body.appendChild(tempInput);
+        tempInput.select();
+        document.execCommand('copy');
+        document.body.removeChild(tempInput);
+        showMessage(displayMessage);
+    } catch (err) {
+        console.error('Could not copy to clipboard:', err);
+        showMessage('// ACCESS DENIED: Copy Failed', 3000);
+    }
+};
+
+/**
+ * Applies a quick, aggressive glitch class and removes it after the animation duration.
+ * @param {HTMLElement} element - The element to glitch.
+ */
+const applyGlitch = (element) => {
+    element.classList.add('glitch-active');
+    // The animation is 0.2s long
+    setTimeout(() => {
+        element.classList.remove('glitch-active');
+    }, 200); 
+};
+
+/**
+ * Updates the content of the dynamic footer terminal output with the current date/time.
+ */
+const updateTerminalOutput = () => {
+    const outputElement = document.getElementById('terminalOutput');
+    const now = new Date();
+    // Format time as HH:MM:SS
+    const timeString = now.toLocaleTimeString('en-US', { hour12: false, hour: '2-digit', minute: '2-digit', second: '2-digit' });
+    // Format date as MM/DD/YYYY
+    const dateString = now.toLocaleDateString('en-US', { year: 'numeric', month: '2-digit', day: '2-digit' });
+
+    // Update with system status and date/time
+    outputElement.innerHTML = `// LIVE_SYNC: ${dateString} ${timeString} // PING: 42ms`;
+};
+
+// --- MAIN APP SYSTEM LOGIC ---
+const logMessages = [
+    "INIT: Core systems online. Status: Nominal.",
+    "SCAN: Detecting unverified connection attempts...",
+    "WARNING: Memory leak detected in module 4A. Patching now.",
+    "PULSE: Signal integrity check successful (200Hz).",
+    "DECRYPT: Processing incoming transmission (Level 5 clearance).",
+    "ALERT: User profile data verified. Access granted.",
+    "CMD: Running recursive database query...",
+    "SUCCESS: All subsystems report green status."
+];
+
+let currentMessageIndex = 0;
+let typingInterval = null;
+let delayTimeout = null;
+const typingSpeed = 40; // ms per character
+const baseDelayBetweenMessages = 3000; // ms
+
+function typeLogMessage() {
+    if (typingInterval) clearInterval(typingInterval);
+    if (delayTimeout) clearTimeout(delayTimeout);
+
+    const logOutputElement = document.getElementById('logOutput');
+    const message = logMessages[currentMessageIndex];
+    let charIndex = 0;
+    logOutputElement.textContent = "";
+
+    typingInterval = setInterval(() => {
+        if (charIndex < message.length) {
+            logOutputElement.textContent += message.charAt(charIndex);
+            charIndex++;
+        } else {
+            clearInterval(typingInterval);
+            typingInterval = null;
+
+            // Pause before starting the next log message
+            const randomDelay = Math.random() * 2000; 
+            delayTimeout = setTimeout(() => {
+                currentMessageIndex = (currentMessageIndex + 1) % logMessages.length;
+                typeLogMessage();
+            }, baseDelayBetweenMessages + randomDelay);
+        }
+    }, typingSpeed);
+}
+// --- END MAIN APP SYSTEM LOGIC ---
+
+
+/**
+ * Initializes all dynamic parts of the main application (footer, logs, links).
+ */
+function initializeMainApp() {
+    if (isAppInitialized) return;
+    isAppInitialized = true;
+    
+    // 1. Setup Dynamic Footer
+    updateTerminalOutput();
+    setInterval(updateTerminalOutput, 1000);
+
+    // **2. Start the main system log animation**
+    typeLogMessage();
+
+    // 3. Setup event listeners for Glitch effect on links
+    document.querySelectorAll('.social-link').forEach(link => {
+        link.addEventListener('click', (e) => {
+            // Apply glitch on click before navigating
+            applyGlitch(e.currentTarget);
+            
+            // Wait for a short moment before navigating to make the glitch visible
+            const href = e.currentTarget.href;
+            if (href && href !== '#') {
+                e.preventDefault(); // Prevent immediate navigation
+                setTimeout(() => {
+                    window.location.href = href;
+                }, 200); 
+            }
+        });
+    });
+
+    // 4. Setup Copy Button
+        const copyBtn = document.getElementById('copyHandleBtn');
+        if (copyBtn) {
+            copyBtn.addEventListener('click', () => {
+                copyToClipboard('@INS SAIMUN', '// USER HANDLE COPIED', copyBtn);
+            });
+        }
+
+    // 5. Setup event listeners for Photo Cards
+    document.querySelectorAll('.photo-card-shadow-neon').forEach(card => {
+        card.addEventListener('click', () => {
+            showMessage('// FILE ACCESS: Opening encrypted data stream...', 1500);
+        });
+    });
+}
+
+
+// --- INTRO SCREEN LOGIC ---
+
+// Boot Log Messages
+const bootLogSequence = [
+    { text: "CHECK: Graphics Adapter (NEON_V1.1) found.", delay: 200 },
+    { text: "SCAN: Checking network integrity...", delay: 400 },
+    { text: "ERROR: Connection timeout on primary server.", delay: 500, isError: true },
+    { text: "RETRY: Establishing connection via fallback protocol...", delay: 600 },
+    { text: "SUCCESS: Connection established. Ping: 42ms.", delay: 250 },
+    { text: "VERIFY: User profile @INS SAIMUN.", delay: 500 },
+    { text: "LOAD: Loading UI elements and system access.", delay: 750 },
+    { text: "COMPLETE: System Ready. Access Authorized.", delay: 1000, isFinal: true }
+];
+
+let logRunning = false;
+
+function runBootLog() {
+    if (logRunning) return;
+    logRunning = true;
+    const bootLogElement = document.getElementById('bootLog');
+    let i = 0;
+
+    function addLogLine() {
+        if (i >= bootLogSequence.length) {
+            // All logs finished
+            document.getElementById('enterSystemBtn').disabled = false;
+            document.getElementById('introTitle').classList.add('typing-done');
+            logRunning = false;
+            return;
+        }
+
+        const log = bootLogSequence[i];
+        const p = document.createElement('p');
+        p.className = 'boot-line text-xs font-mono';
+        p.style.opacity = '0';
+        
+        if (log.isError) {
+            p.classList.add('text-red-400'); // Apply red for errors
+        } else if (log.isFinal) {
+            p.classList.add('text-green-400', 'font-bold'); // Apply green for final
+        }
+        
+        bootLogElement.appendChild(p);
+        
+        // Simple typewriter effect for each log line
+        let charIndex = 0;
+        const lineTypingInterval = setInterval(() => {
+            if (charIndex < log.text.length) {
+                p.textContent += log.text.charAt(charIndex);
+                charIndex++;
+                p.style.opacity = '1'; // Make text visible as it types
+                bootLogElement.scrollTop = bootLogElement.scrollHeight; // Auto-scroll
+            } else {
+                clearInterval(lineTypingInterval);
+                i++;
+                setTimeout(addLogLine, log.delay);
+            }
+        }, 30); // Typing speed for log lines
+    }
+
+    addLogLine();
+}
+
+/**
+ * Typewriter effect for the main title on the intro screen.
+ * @returns {Promise<void>} Resolves when typing is complete.
+ */
+function typeTitle() {
+    return new Promise(resolve => {
+        const titleElement = document.getElementById('introTitle');
+        const textToType = titleElement.getAttribute('data-text');
+        
+        let charIndex = 0;
+        const typeInterval = 80; // ms per character
+        
+        const typeChar = () => {
+            if (charIndex < textToType.length) {
+                // For the illusion of a typewriter, we increase the width
+                const currentWidth = (charIndex + 1) * 2.5; // Estimated character width
+                titleElement.style.width = `${currentWidth}rem`; 
+                charIndex++;
+                setTimeout(typeChar, typeInterval);
+            } else {
+                titleElement.style.width = 'auto'; // Set final width to 'auto'
+                resolve();
+            }
+        };
+        typeChar();
+    });
+}
+
+
+// --- ENTRY POINT ---
+document.addEventListener('DOMContentLoaded', async () => {
+    // 1. Initial Typewriter for Title
+    await typeTitle();
+
+    // 2. Run the Boot Log Sequence
+    runBootLog();
+    
+    // 3. Setup Intro Button Click Handler
+    const enterSystemBtn = document.getElementById('enterSystemBtn');
+    const introScreen = document.getElementById('introScreen');
+    const mainContent = document.getElementById('mainContent');
+
+    enterSystemBtn.addEventListener('click', () => {
+        if (enterSystemBtn.disabled) return;
+
+        // Apply Glitch to button on entry
+        applyGlitch(enterSystemBtn);
+
+        // Transition out the intro screen
+        introScreen.style.opacity = '0';
+        
+        setTimeout(() => {
+            introScreen.classList.add('hidden'); // Hide the intro screen
+            mainContent.classList.remove('hidden'); // Show the main content
+            mainContent.style.opacity = '1'; // Fade in the main content
+
+            // Initialize the persistent animations and listeners
+            initializeMainApp();
+            
+            // Initial success message
+            showMessage('// SYSTEM ACCESS: Welcome Operator', 3000);
+            
+        }, 1000); // Duration matches CSS transition
+    });
+
+    // Run main app initialization only when the page is fully loaded and intro is passed (optional here, but good practice)
+    // initializeMainApp(); 
+});
+
+
+</script>
+
+</body>
+</html>
